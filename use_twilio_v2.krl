@@ -26,6 +26,9 @@ ruleset use_twilio_v2 {
  
   rule test_send_sms {
     select when test new_message
+    pre {
+      nada = event:attrs().klog("What is this? ")
+    }
     twilio:send_sms(event:attr("to"),
                     event:attr("from"),
                     event:attr("message")
