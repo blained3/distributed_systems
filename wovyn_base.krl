@@ -35,10 +35,10 @@ ruleset wovyn_base {
   	}
   	if isHigher then
   		send_directive("say", {"something": "The temperature is higher!"})
-	fired {
-		raise wovyn event "threshold_violation"
-		attributes event:attrs()
-	}
+		fired {
+			raise wovyn event "threshold_violation"
+			attributes event:attrs()
+		}
   }
 
   rule threshold_notification {
