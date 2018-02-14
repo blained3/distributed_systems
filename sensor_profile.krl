@@ -26,10 +26,9 @@ ruleset sensor_profile {
         select when sensor profile_updated
         pre {
             location = event.attr("location").defaultsTo(ent:profile{"location"})
-            name = event.attr("name").defaultsTo(ent:profile{"name"})
-            temperature_threshold = event.attr("temperature_threshold").defaultsTo(ent:profile{"temperature_threshold"})
-            toPhoneNumber = event.attr("toPhoneNumber").defaultsTo(ent:profile{"toPhoneNumber"})
         }
-        send_directive("profile", ent:profile)
+        fired {
+            ent:profile{"location"} := location
+        }
     }
 }
