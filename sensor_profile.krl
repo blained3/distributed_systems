@@ -8,7 +8,7 @@ ruleset sensor_profile {
     global {
         getProfile = function() {
             ent:profile.defaultsTo({"location": "My House", 
-                                    "name": "Supe Sensor", 
+                                    "name": "Sup Sensor", 
                                     "temperature_threshold": 85, 
                                     "toPhoneNumber": "13072140680"})
         }
@@ -25,16 +25,17 @@ ruleset sensor_profile {
     rule profile_updated {
         select when sensor profile_updated
         pre {
-            location = event.attr("location")
-            name = event.attr("name")
-            temperature_threshold = event.attr("temperature_threshold")
-            toPhoneNumber = event.attr("toPhoneNumber")
+            location = event.attr("location").defaultsTo(ent:profile{"location"})
+            name = event.attr("name").defaultsTo(ent:profile{"name"})
+            temperature_threshold = event.attr("temperature_threshold").defaultsTo(ent:profile{"temperature_threshold"})
+            toPhoneNumber = event.attr("toPhoneNumber").defaultsTo(ent:profile{"toPhoneNumber"})
         }
-        fired {
+        always {
             ent:profile := {"location": location,
                             "name": name,
                             "temperature_threshold": temperature_threshold,
                             "toPhoneNumber": toPhoneNumber}
+            send_directive("profile", ent:profile)
         }
     }
 }
