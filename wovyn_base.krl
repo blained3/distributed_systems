@@ -44,7 +44,7 @@ ruleset wovyn_base {
   	select when wovyn threshold_violation
   	pre {
   		nothing = event:attrs().klog("Sent a message: ")
-			toPhoneNumber = sensor_profile:getProfile{"toPhoneNumber"}
+			toPhoneNumber = sensor_profile:getProfile(){"toPhoneNumber"}
   	}
   	fired {
 	  	raise test event "new_message"
