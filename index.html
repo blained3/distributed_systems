@@ -26,23 +26,25 @@
     <div class="page-header"> 
     <h1>Profile</h1>
     </div>
-    <div>
-        <span>Name: </span>
-        <input ng-model="profile.name">
-    </div>
-    <div>
-        <span>Location: </span>
-        <input ng-model="profile.location">
-    </div>
-    <div>
-        <span>Threshold: </span>
-        <input type="number" ng-model="profile.temperature_threshold">
-    </div>
-    <div>
-        <span>Sent To: </span>
-        <input ng-model="profile.toPhoneNumber">
-    </div>
-    <button ng-click="updateProfile()">Update</button>
+    <form ng-submit="updateProfile()" style = "margin-top:30px;">
+        <div>
+            <span>Name: </span>
+            <input ng-model="profile.name">
+        </div>
+        <div>
+            <span>Location: </span>
+            <input ng-model="profile.location">
+        </div>
+        <div>
+            <span>Threshold: </span>
+            <input type="number" ng-model="profile.temperature_threshold">
+        </div>
+        <div>
+            <span>Sent To: </span>
+            <input ng-model="profile.toPhoneNumber">
+        </div>
+      <button type="submit">Update</button>
+    </form>
 
 </div>
 </div>
