@@ -27,7 +27,7 @@ ruleset sensor_profile {
         pre {
             location = event:attr("location").defaultsTo(getProfile(){"location"})
             name = event:attr("name").defaultsTo(getProfile(){"name"})
-            temperature_threshold = event:attr("temperature_threshold").defaultsTo(getProfile(){"temperature_threshold"})
+            temperature_threshold = event:attr("temperature_threshold").as("Number").defaultsTo(getProfile(){"temperature_threshold"})
             toPhoneNumber = event:attr("toPhoneNumber").defaultsTo(getProfile(){"toPhoneNumber"})
         }
         fired {
