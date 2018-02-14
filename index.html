@@ -17,8 +17,9 @@
     </div>
     <ul>
         <li ng-repeat="temp in temperatures | orderBy: '-timestamp'">
-            <span ng-class="{'hot': checkTemp(temp) }">{{ temp.temperature }}</span>
-            <span>{{ temp.timestamp | date : "short" }}</span>
+            <div>
+                <label ng-class="{'hot': checkTemp(temp) }" style="width: 75px">{{ temp.temperature }}&nbsp;&#8457;</label>{{ temp.timestamp | date : "short" }}
+            </div>
         </li>
     </ul>
 </div>
