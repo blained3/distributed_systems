@@ -25,10 +25,10 @@ ruleset sensor_profile {
     rule profile_updated {
         select when sensor profile_updated
         pre {
-            location = event.attr("location")
+            nada = event:attrs().klog("What is this? ")
         }
         fired {
-            ent:profile{"location"} := location.defaultsTo(ent:profile{"location"})
+            ent:profile{"location"} := event.attr("location").defaultsTo(ent:profile{"location"})
         }
     }
 }
