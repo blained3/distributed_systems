@@ -28,7 +28,7 @@ ruleset sensor_profile {
             location = event:attr("location").defaultsTo(ent:profile{"location"})
         }
         fired {
-            ent:profile := ent:profile.put("location", location);
+            ent:profile{"location"} = location;
         }
     }
 }
