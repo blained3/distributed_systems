@@ -24,6 +24,8 @@ ruleset sensor_profile {
     
     rule profile_updated {
         select when sensor profile_updated
-        send_directive("say", {"something": "Hi"})
+        fired {
+            ent:profile{"location"} := "Roar"
+        }
     }
 }
