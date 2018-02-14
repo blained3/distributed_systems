@@ -1,7 +1,7 @@
 ruleset sensor_profile {
     meta {
         logging on
-        shares getProfile
+        shares getProfile, __testing
         provides getProfile
     }
 
