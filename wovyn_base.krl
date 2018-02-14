@@ -28,7 +28,7 @@ ruleset wovyn_base {
   rule find_high_temps {
   	select when wovyn new_temperature_reading
   	pre {
-  		isHigher = event:attr("temperature") > sensor_profile:getProfile{"temperature_threshold"}
+  		isHigher = event:attr("temperature") > sensor_profile:getProfile(){"temperature_threshold"}
   		nothing = isHigher.klog("Is it higher? ")
   		temp = event:attr("temperature").klog("Current Temp: ")
   	}
