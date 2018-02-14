@@ -7,10 +7,11 @@ ruleset sensor_profile {
 
     global {
         getProfile = function() {
-            ent:profile.defaultsTo({"location": "My House", 
+            ent:profile = ent:profile.defaultsTo({"location": "My House", 
                                     "name": "Supers Sensor", 
-                                    "temperature_threshold": 85, 
+                                    "temperature_threshold": 60, 
                                     "toPhoneNumber": "13072140680"})
+            ent:profile
         }
         __testing = {
             "queries": [
