@@ -11,7 +11,6 @@ ruleset sensor_profile {
                                     "name": "Supers Sensor", 
                                     "temperature_threshold": 60, 
                                     "toPhoneNumber": "13072140680"});
-            ent:profile;
         }
         __testing = {
             "queries": [
