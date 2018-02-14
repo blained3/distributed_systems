@@ -6,9 +6,10 @@ ruleset wovyn_base {
   }
   global {
   	fromPhoneNumber = "13073164633"
-    __testing = { "queries": [ { "name": "__testing" } ],
-                  "events": [ { "domain": "wovyn", "type": "heartbeat",
-                              "attrs": [ "temp", "baro" ] } ] }
+    __testing = { "events": [ { "domain": "wovyn", "type": "heartbeat",
+                              "attrs": [ "temp", "baro" ] },
+															{ "domain": "wovyn", "type": "new_temperature_reading",
+                              "attrs": [ "temperature" ] } ] }
   }
  
   rule process_heartbeat {
