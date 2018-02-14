@@ -35,7 +35,7 @@ ruleset sensor_profile {
                             "name": name,
                             "temperature_threshold": temperature_threshold,
                             "toPhoneNumber": toPhoneNumber}
-            send_directive("profile", ent:profile)
+            ent:profile
         }
     }
 }
