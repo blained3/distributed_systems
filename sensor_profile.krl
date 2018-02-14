@@ -8,7 +8,7 @@ ruleset sensor_profile {
     global {
         getProfile = function() {
             ent:profile.defaultsTo({"location": "My House", 
-                                    "name": "Supersasdf Sensor", 
+                                    "name": "Supersa Sensor", 
                                     "temperature_threshold": 85, 
                                     "toPhoneNumber": "13072140680"})
         }
@@ -24,8 +24,6 @@ ruleset sensor_profile {
     
     rule profile_updated {
         select when sensor profile_updated
-        fired {
-            ent:profile{"location"} := event.attr("location").defaultsTo("BLah")
-        }
+        send_directive("say", {"something": "Hi"})
     }
 }
