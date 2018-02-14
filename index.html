@@ -1,0 +1,27 @@
+<!doctype html>
+<html>
+<head>
+  <title>CS 462</title>
+  <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
+  <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.19/angular.min.js"></script>
+  <script src="app.js"></script>
+  <style type="text/css">
+    .hot { color: red; }
+  </style>
+</head>
+<body ng-app="temps" ng-controller="MainCtrl">
+<div class="row">
+<div class="col-md-8 col-md-offset-2">
+    <div class="page-header"> 
+    <h1>Temperatures</h1>
+    </div>
+    <ul>
+        <li ng-repeat="temp in temperatures">
+            <span ng-class="{'hot': checkTemp(temp.temperature) }">{{ temp.temperature }}</span>
+            <span>{{ temp.timestamp | date : "short" }}</span>
+        </li>
+    </ul>
+</div>
+</div>
+</body>
+</html>

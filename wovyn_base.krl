@@ -2,10 +2,9 @@ ruleset wovyn_base {
   meta {
   	logging on
     shares __testing
+		use module sensor_profile
   }
   global {
-  	temperature_threshold = 85
-  	toPhoneNumber = "13072140680"
   	fromPhoneNumber = "13073164633"
     __testing = { "queries": [ { "name": "__testing" } ],
                   "events": [ { "domain": "wovyn", "type": "heartbeat",
@@ -29,7 +28,7 @@ ruleset wovyn_base {
   rule find_high_temps {
   	select when wovyn new_temperature_reading
   	pre {
-  		isHigher = event:attr("temperature") > temperature_threshold
+  		isHigher = event:attr("temperature") > sensor_profile:getProfile{"temperature_threshold"}
   		nothing = isHigher.klog("Is it higher? ")
   		temp = event:attr("temperature").klog("Current Temp: ")
   	}
@@ -45,6 +44,7 @@ ruleset wovyn_base {
   	select when wovyn threshold_violation
   	pre {
   		nothing = event:attrs().klog("Sent a message: ")
+			toPhoneNumber = sensor_profile:getProfile{"toPhoneNumber"}
   	}
   	fired {
 	  	raise test event "new_message"
