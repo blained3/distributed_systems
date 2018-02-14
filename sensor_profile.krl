@@ -30,11 +30,6 @@ ruleset sensor_profile {
             temperature_threshold = event.attr("temperature_threshold").defaultsTo(ent:profile{"temperature_threshold"})
             toPhoneNumber = event.attr("toPhoneNumber").defaultsTo(ent:profile{"toPhoneNumber"})
         }
-        always {
-            ent:profile := {"location": location,
-                            "name": name,
-                            "temperature_threshold": temperature_threshold,
-                            "toPhoneNumber": toPhoneNumber}
-        }
+        send_directive("profile", ent:profile)
     }
 }
