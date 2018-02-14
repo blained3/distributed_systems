@@ -25,7 +25,7 @@ ruleset sensor_profile {
     rule profile_updated {
         select when sensor profile_updated
         pre {
-            location = event:attr("location").defaultsTo(ent:profile("location"))
+            location = event:attr("location").defaultsTo(ent:profile{"location"})
         }
         fired {
             ent:profile := ent:profile.defaultsTo({}).put("location", location);
