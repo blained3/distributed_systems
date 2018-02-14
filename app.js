@@ -9,11 +9,10 @@ angular.module('temps', [])
         toPhoneNumber: "8675309",
         temperature_threshold: 85
     };
+    var high_temps = [];
     var url = "http://ec2-18-219-184-183.us-east-2.compute.amazonaws.com:8080/sky";
     var eci = "NgBFjfKcGmNNrQxrN2b51";
     // var channel = "NBeJtRZhnGVp5b7zFuA4b4";
-
-    // var bURL = '/sky/event/'+$scope.eci+'/eid/timing/started';
 
     $scope.updateProfile = function(){
         $http.post(url + '/event/' + eci + '/NBeJtRZhnGVp5b7zFuA4b4/sensor/profile_updated?name=' + $scope.profile.name
@@ -22,11 +21,17 @@ angular.module('temps', [])
         });
     };
 
-    $scope.checkTemp = function(degree) {
-        return degree > $scope.profile.temperature_threshold;
+    $scope.checkTemp = function(temp) {
+        return high_temps.some(function(val){
+            return val.timestamp === temp.timestamp;
+        });
+        // return degree > $scope.profile.temperature_threshold;
     };
 
     $scope.getAll = function() {
+        $http.get(url + '/cloud/' + eci + '/temperature_store/threshold_violations').success(function(data){
+            angular.copy(data, high_temps);
+          });
         $http.get(url + '/cloud/' + eci + '/sensor_profile/getProfile').success(function(data){
             $scope.profile = data;
         });
