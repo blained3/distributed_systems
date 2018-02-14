@@ -10,7 +10,7 @@ ruleset sensor_profile {
             ent:profile = ent:profile.defaultsTo({"location": "My House", 
                                     "name": "Supers Sensor", 
                                     "temperature_threshold": 60, 
-                                    "toPhoneNumber": "13072140680"})
+                                    "toPhoneNumber": "13072140680"});
             ent:profile
         }
         __testing = {
