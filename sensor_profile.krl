@@ -31,14 +31,10 @@ ruleset sensor_profile {
             toPhoneNumber = event.attr("toPhoneNumber").defaultsTo(ent:profile{"toPhoneNumber"})
         }
         fired {
-            ent:profile := ent:profile.defaultsTo({"location": "My House", 
-                                                    "name": "Super Sensor", 
-                                                    "temperature_threshold": 85, 
-                                                    "toPhoneNumber": "13072140680"})
-            ent:profile{"location"} := location
-            ent:profile{"name"} := name
-            ent:profile{"temperature_threshold"} := temperature_threshold
-            ent:profile{"toPhoneNumber"} := toPhoneNumber
+            ent:profile := {"location": location,
+                            "name": name,
+                            "temperature_threshold": temperature_threshold,
+                            "toPhoneNumber": toPhoneNumber}
         }
     }
 }
