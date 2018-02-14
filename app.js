@@ -15,6 +15,13 @@ angular.module('temps', [])
 
     // var bURL = '/sky/event/'+$scope.eci+'/eid/timing/started';
 
+    $scope.updateProfile = function(){
+        $http.post(url + '/event/' + eci + '/NBeJtRZhnGVp5b7zFuA4b4/sensor/profile_updated?name=' + $scope.profile.name
+                    + '&location=' + $scope.profile.location + '&temperature_threshold=' + $scope.profile.temperature_threshold + '&toPhoneNumber=' + $scope.profile.toPhoneNumber).success(function(data){
+            alert('Successfully update the profile');
+        });
+    };
+
     $scope.checkTemp = function(degree) {
         return degree > $scope.profile.temperature_threshold;
     };

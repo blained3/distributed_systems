@@ -27,17 +27,22 @@
     <h1>Profile</h1>
     </div>
     <div>
-        <h5>Name: {{profile.name}}</h5>
+        <h5>Name: </h5>
+        <input ng-model="profile.name">
     </div>
     <div>
-        <span>Location: {{profile.location}}</span>
+        <span>Location: </span>
+        <input ng-model="profile.location">
     </div>
     <div>
-        <span>Threshold: {{profile.temperature_threshold}}</span>
+        <span>Threshold: </span>
+        <input type="number" ng-model="profile.temperature_threshold">
     </div>
     <div>
-        <span>Sent To: {{profile.toPhoneNumber}}</span>
+        <span>Sent To: </span>
+        <input ng-model="profile.toPhoneNumber">
     </div>
+    <button ng-click="updateProfile()">Update</button>
 
 </div>
 </div>
