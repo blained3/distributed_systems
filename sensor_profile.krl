@@ -25,10 +25,10 @@ ruleset sensor_profile {
     rule profile_updated {
         select when sensor profile_updated
         pre {
-            location = event.attr("location").defaultsTo(ent:profile{"location"})
-            name = event.attr("name").defaultsTo(ent:profile{"name"})
-            temperature_threshold = event.attr("temperature_threshold").defaultsTo(ent:profile{"temperature_threshold"})
-            toPhoneNumber = event.attr("toPhoneNumber").defaultsTo(ent:profile{"toPhoneNumber"})
+            location = event.attr("location")
+            name = event.attr("name")
+            temperature_threshold = event.attr("temperature_threshold")
+            toPhoneNumber = event.attr("toPhoneNumber")
         }
         fired {
             ent:profile := {"location": location,
