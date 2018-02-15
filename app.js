@@ -12,7 +12,6 @@ angular.module('temps', [])
     var high_temps = [];
     var url = "http://ec2-18-219-184-183.us-east-2.compute.amazonaws.com:8080/sky";
     var eci = "NgBFjfKcGmNNrQxrN2b51";
-    // var channel = "NBeJtRZhnGVp5b7zFuA4b4";
 
     $scope.updateProfile = function(){
         $http.post(url + '/event/' + eci + '/NBeJtRZhnGVp5b7zFuA4b4/sensor/profile_updated?name=' + $scope.profile.name
@@ -25,7 +24,6 @@ angular.module('temps', [])
         return high_temps.some(function(val){
             return val.timestamp === temp.timestamp;
         });
-        // return degree > $scope.profile.temperature_threshold;
     };
 
     $scope.getAll = function() {
