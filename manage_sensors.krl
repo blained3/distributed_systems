@@ -1,10 +1,10 @@
 ruleset manage_sensors {
 	meta {
-		shares __testing, sensors, temperatures
+		shares __testing, sensors, allTemperatures
 	}
 	global {
 		__testing = {
-			"queries": [ { "name": "__testing" }, { "name": "sensors" }, { "name": "temperatures" } ],
+			"queries": [ { "name": "__testing" }, { "name": "sensors" }, { "name": "allTemperatures" } ],
 			"events": [ { "domain": "sensor", "type": "new_sensor", "attrs": [ "sensor_id" ] },
 									{ "domain": "sensor", "type": "unneeded_sensor", "attrs": [ "sensor_id" ] },
 									{ "domain": "collection", "type": "empty", "attrs": [  ] } ]
@@ -16,8 +16,12 @@ ruleset manage_sensors {
 			ent:sensors.defaultsTo({});
 		}
 
-		temperatures = function() {
-			engine:listChildren();
+		allTemperatures = function() {
+			engine:listChildren().map(function(pico_id){
+				obj = {};
+				obj{[pico_id]} = getChildByPicoId(pico_id).temperatures();
+				obj
+			});
 		}
 
 		nameFromID = function(sensor_id) {
@@ -56,24 +60,35 @@ ruleset manage_sensors {
 		fired {
 			ent:sensors := ent:sensors.defaultsTo({});
 			ent:sensors{[nameFromID(sensor_id)]} := eci;
-			event:send(
-			 { "eci": eci,
-				 "domain": "sensor",
-				 "type": "profile_updated",
-				 "attrs": { "name": nameFromID(sensor_id),
-										"temperature_threshold": temperature_threshold,
-										"location": "My House",
-										"toPhoneNumber": "13072140680" } } )
+			raise sensor event "update_sensor" attributes {"sensor_id": sensor_id,"eci": eci} on final
 		}
+	}
+
+	rule update_sensor {
+		select when sensor update_sensor
+		pre {
+			eci = event:attr("eci")
+			sensor_id = event:attr("sensor_id")
+		}
+		event:send(
+		 { "eci": eci,
+			 "domain": "sensor",
+			 "type": "profile_updated",
+			 "attrs": { "name": nameFromID(sensor_id),
+									"temperature_threshold": temperature_threshold,
+									"location": "My House",
+									"toPhoneNumber": "13072140680" } } )
 	}
 
 	rule remove_sensor {
 		select when sensor unneeded_sensor
 		pre {
-			name = nameFromID(event:attr("sensor_id"))
-			pico_id = engine:getPicoIDByECI(ent:sensors{[name]})
+			sensor_id = event:attr("sensor_id")
+			exists = ent:sensors >< sensor_id
+			name = nameFromID(sensor_id)
 		}
-		engine:removePico(pico_id)
+		if exists then
+		engine:removePico(engine:getPicoIDByECI(ent:sensors{[name]}))
 		always {
 			clear ent:sensors{[name]}
 		}
