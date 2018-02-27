@@ -18,9 +18,8 @@ ruleset manage_sensors {
 		}
 
 		allTemperatures = function() {
-			sensors().map(function(name,eci){
-				obj = {};
-				obj{[name]} = http:get("http://localhost:8080/sky/cloud/" + eci + "/temperature_store/temperatures"){"content"};
+			sensors().map(function(eci,name){
+				obj = http:get("http://localhost:8080/sky/cloud/" + eci + "/temperature_store/temperatures"){"content"};
 				obj
 			});
 		}
