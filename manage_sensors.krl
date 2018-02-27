@@ -36,6 +36,8 @@ ruleset manage_sensors {
 			exists = ent:sensors >< sensor_id
 		}
 		fired {
+			ent:sensors := ent:sensors.defaultsTo({});
+			ent:sensors{[nameFromID(sensor_id)]} := "";
 			raise wrangler event "child_creation"
 				attributes { "name": nameFromID(sensor_id),
 											"color": "#ffff00",
@@ -58,7 +60,6 @@ ruleset manage_sensors {
 				"type": "install_rulesets_requested",
 				"attrs": { "rids": ["temperature_store", "sensor_profile", "wovyn_base"] } } )
 		fired {
-			ent:sensors := ent:sensors.defaultsTo({});
 			ent:sensors{[nameFromID(sensor_id)]} := eci;
 			raise sensor event "update_sensor" attributes {"sensor_id": sensor_id,"eci": eci} on final
 		}
