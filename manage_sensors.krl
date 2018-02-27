@@ -8,8 +8,7 @@ ruleset manage_sensors {
 					{ "name": "sensors" },
 					{ "name": "allTemperatures" } ],
 			"events": [ { "domain": "sensor", "type": "new_sensor", "attrs": [ "sensor_id" ] },
-					{ "domain": "sensor", "type": "unneeded_sensor", "attrs": [ "sensor_id" ] },
-					{ "domain": "collection", "type": "empty", "attrs": [  ] } ]
+					{ "domain": "sensor", "type": "unneeded_sensor", "attrs": [ "sensor_id" ] } ]
 		}
 
 		temperature_threshold = 78
@@ -92,13 +91,6 @@ ruleset manage_sensors {
 		engine:removePico(pico_id)
 		always {
 			clear ent:sensors{[name]}
-		}
-	}
-
-	rule collection_empty {
-		select when collection empty
-		always {
-			ent:sensors := {}
 		}
 	}
 }
