@@ -86,11 +86,10 @@ ruleset manage_sensors {
 		select when sensor unneeded_sensor
 		pre {
 			sensor_id = event:attr("sensor_id")
-			exists = ent:sensors >< sensor_id
 			name = nameFromID(sensor_id)
+			pico_id = engine:getPicoIDByECI(ent:sensors{[name]})
 		}
-		if exists then
-			engine:removePico(engine:getPicoIDByECI(ent:sensors{[name]}))
+		engine:removePico(pico_id)
 		always {
 			clear ent:sensors{[name]}
 		}
