@@ -2,7 +2,8 @@ ruleset wovyn_base {
   meta {
   	logging on
     shares __testing
-		use module sensor_profile
+	use module sensor_profile
+	use module io.picolabs.subscription alias Subscriptions
   }
   global {
   	fromPhoneNumber = "13073164633"
@@ -11,7 +12,7 @@ ruleset wovyn_base {
 															{ "domain": "wovyn", "type": "new_temperature_reading",
                               "attrs": [ "temperature" ] } ] }
   }
- 
+
   rule process_heartbeat {
     select when wovyn heartbeat where genericThing != null
     pre {
@@ -44,16 +45,19 @@ ruleset wovyn_base {
   rule threshold_notification {
   	select when wovyn threshold_violation
   	pre {
-  		nothing = event:attrs().klog("Sent a message: ")
-			toPhoneNumber = sensor_profile:getProfile(){"toPhoneNumber"}
+		nothing = event:attrs().klog("Sent a message: ")
+		toPhoneNumber = sensor_profile:getProfile(){"toPhoneNumber"}
   	}
-  	fired {
-	  	raise test event "new_message"
-	  	attributes {
-	  		"to": toPhoneNumber,
-	  		"from": fromPhoneNumber,
-	  		"message": "The temperature was " + event:attr("temperature") + " at " + event:attr("timestamp") + "!!"
-	  	}
-  	}
+	foreach Subscriptions:established("Tx_role","manager") setting (sub)
+		event:send({
+			"eci": sub{"Tx"},
+			"domain": "test",
+			"type": "new_message",
+			"attrs": {
+				"to": toPhoneNumber,
+				"from": fromPhoneNumber,
+				"message": "The temperature was " + event:attr("temperature") + " at " + event:attr("timestamp") + "!!"
+			}
+		});
   }
 }

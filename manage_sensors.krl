@@ -1,5 +1,6 @@
 ruleset manage_sensors {
 	meta {
+		use module io.picolabs.subscription alias Subscriptions
 		shares __testing, sensors, allTemperatures
 	}
 	global {
@@ -8,7 +9,8 @@ ruleset manage_sensors {
 					{ "name": "sensors" },
 					{ "name": "allTemperatures" } ],
 			"events": [ { "domain": "sensor", "type": "new_sensor", "attrs": [ "sensor_id" ] },
-					{ "domain": "sensor", "type": "unneeded_sensor", "attrs": [ "sensor_id" ] } ]
+					{ "domain": "sensor", "type": "unneeded_sensor", "attrs": [ "sensor_id" ] },
+					{ "domain": "sensor", "type": "add_sensor", "attrs": [ "name", "otherHost", "eci" ] } ]
 		}
 
 		temperature_threshold = 78
@@ -18,8 +20,8 @@ ruleset manage_sensors {
 		}
 
 		allTemperatures = function() {
-			sensors().map(function(eci,name){
-				obj = http:get("http://localhost:8080/sky/cloud/" + eci + "/temperature_store/temperatures"){"content"};
+			Subscriptions:established("Rx_role","sensor").map(function(sub){
+				obj = http:get(sub{"Tx_host"}.defaultsTo("http://localhost:8080") + "/sky/cloud/" + sub{"Tx"} + "/temperature_store/temperatures"){"content"};
 				obj
 			});
 		}
@@ -38,8 +40,8 @@ ruleset manage_sensors {
 		fired {
 			raise wrangler event "child_creation"
 				attributes { "name": nameFromID(sensor_id),
-											"color": "#ffff00",
-											"sensor_id": sensor_id } if not exists
+							"color": "#ffff00",
+							"sensor_id": sensor_id } if not exists
 		}
 	}
 
@@ -56,7 +58,7 @@ ruleset manage_sensors {
 				"eid": "install-ruleset",
 				"domain": "wrangler",
 				"type": "install_rulesets_requested",
-				"attrs": { "rids": ["temperature_store", "sensor_profile", "wovyn_base"] } } )
+				"attrs": { "rids": ["io.picolabs.subscription", "temperature_store", "sensor_profile", "wovyn_base"] } } )
 		fired {
 			ent:sensors := ent:sensors.defaultsTo({});
 			ent:sensors{[nameFromID(sensor_id)]} := eci;
@@ -70,14 +72,42 @@ ruleset manage_sensors {
 			eci = event:attr("eci")
 			sensor_id = event:attr("sensor_id")
 		}
-		event:send(
-		{ "eci": eci,
-			"domain": "sensor",
-			"type": "profile_updated",
-			"attrs": { "name": nameFromID(sensor_id),
-								"temperature_threshold": temperature_threshold,
-								"location": "My House",
-								"toPhoneNumber": "13072140680" } } )
+		every {
+			event:send({ "eci": eci,
+						"domain": "sensor",
+						"type": "profile_updated",
+						"attrs": { "name": nameFromID(sensor_id),
+									"temperature_threshold": temperature_threshold,
+									"location": "My House",
+									"toPhoneNumber":  } } );
+
+			event:send({ "eci": eci,
+						"domain": "wrangler",
+						"type": "subscription",
+						"attrs": { "name": nameFromID(sensor_id),
+								   "Rx_role": "sensor",
+								   "Tx_role": "manager",
+								   "channel_type": "subscription",
+								   "wellKnown_Tx": meta:eci } } )
+		}
+	}
+
+	rule add_sensor {
+		select when sensor add_sensor
+		pre {
+			name = event:attr("name")
+			otherHost = event:attr("otherHost")
+			eci = event:attr("eci")
+		}
+		event:send({ "eci": eci,
+					"domain": "wrangler",
+					"type": "subscription",
+					"attrs": { "name": name,
+							"Tx_host": meta:host,
+							"Rx_role": "sensor",
+							"Tx_role": "manager",
+							"channel_type": "subscription",
+							"wellKnown_Tx": meta:eci } }, host = otherHost )
 	}
 
 	rule remove_sensor {
@@ -92,4 +122,13 @@ ruleset manage_sensors {
 			clear ent:sensors{[name]}
 		}
 	}
+
+	rule auto_accept {
+		select when wrangler inbound_pending_subscription_added
+		fired {
+			raise wrangler event "pending_subscription_approval"
+			attributes event:attrs
+		}
+	}
+
 }
