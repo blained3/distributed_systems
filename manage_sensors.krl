@@ -1,6 +1,7 @@
 ruleset manage_sensors {
 	meta {
 		use module io.picolabs.subscription alias Subscriptions
+		use module manager_profile
 		shares __testing, sensors, allTemperatures
 	}
 	global {
@@ -79,7 +80,7 @@ ruleset manage_sensors {
 						"attrs": { "name": nameFromID(sensor_id),
 									"temperature_threshold": temperature_threshold,
 									"location": "My House",
-									"toPhoneNumber":  } } );
+									"toPhoneNumber": manager_profile:getProfile(){"toPhoneNumber"} } } );
 
 			event:send({ "eci": eci,
 						"domain": "wrangler",
