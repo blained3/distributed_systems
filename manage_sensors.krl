@@ -21,10 +21,11 @@ ruleset manage_sensors {
 		}
 
 		allTemperatures = function() {
-			Subscriptions:established("Rx_role","sensor").map(function(sub){
-				obj = http:get(sub{"Tx_host"}.defaultsTo("http://localhost:8080") + "/sky/cloud/" + sub{"Tx"} + "/temperature_store/temperatures"){"content"};
+			stuff = Subscriptions:established("Tx_role","sensor").map(function(sub){
+				obj = http:get(sub{"Tx_host"}.defaultsTo("http://localhost:8080") + "/sky/cloud/" + sub{"Tx"} + "/temperature_store/temperatures"){"content"}.decode();
 				obj
 			});
+			stuff
 		}
 
 		nameFromID = function(sensor_id) {
