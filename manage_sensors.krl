@@ -103,6 +103,7 @@ ruleset manage_sensors {
 
 	rule signal_report {
 		select when sensor signal_report
+		foreach Subscriptions:established("Tx_role","sensor") setting (sub)
 		pre {
 			reportId = random:uuid()
 			getLatestReports(){reportId} = {
@@ -111,19 +112,15 @@ ruleset manage_sensors {
 				"temperatures": []
 			}
 		}
-		fired {
-			Subscriptions:established("Tx_role","sensor").map(function(sub){
-				event:send({
-					"eci": sub{"Tx"},
-					"domain": "sensor",
-					"type": "report",
-					"attrs": {
-						"reportId": reportId,
-						"eci": meta:eci
-					}
-				});
-			});
-		}
+		event:send({
+			"eci": sub{"Tx"},
+			"domain": "sensor",
+			"type": "report",
+			"attrs": {
+				"reportId": reportId,
+				"eci": meta:eci
+			}
+		});
 	}
 
 	rule catch_report {
