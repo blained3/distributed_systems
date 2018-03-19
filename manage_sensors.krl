@@ -105,8 +105,8 @@ ruleset manage_sensors {
 		select when sensor signal_report
 		foreach Subscriptions:established("Tx_role","sensor") setting (sub)
 		pre {
-			reportId = random:uuid()
-			getLatestReports(){reportId} = {
+			reportId = random:uuid().klog()
+			ent:reports{reportId} = {
 				"sent": 0,
 				"returned": 0,
 				"temperatures": []
