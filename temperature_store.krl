@@ -30,7 +30,27 @@ ruleset temperature_store {
             ]
         }
     }
-    
+
+
+    rule sensor_report {
+        select when sensor report
+        pre {
+            reportId = event:attr("reportId")
+            returnId = event:attr("eci")
+        }
+        event:send({
+            "eci": returnId,
+            "domain": "return",
+            "type": "report",
+            "attrs": {
+                "temperatures": temperatures()
+            }
+        })
+    }
+
+
+
+
     rule collect_temperatures {
         select when wovyn new_temperature_reading
         send_directive("say", {"something": "You got temperature!"})
@@ -38,7 +58,7 @@ ruleset temperature_store {
             ent:temps := ent:temps.defaultsTo([]).append(event:attrs())
         }
     }
-    
+
     rule collect_threshold_violations {
         select when wovyn threshold_violation
         send_directive("say", {"something": "You got violation!"})
@@ -46,7 +66,7 @@ ruleset temperature_store {
             ent:violations := ent:violations.defaultsTo([]).append(event:attrs())
         }
     }
-    
+
     rule clear_temperatures {
         select when sensor reading_reset
         send_directive("say", {"something": "You cleared it!"})

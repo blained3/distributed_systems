@@ -2,14 +2,15 @@ ruleset manage_sensors {
 	meta {
 		use module io.picolabs.subscription alias Subscriptions
 		use module manager_profile
-		shares __testing, sensors, allTemperatures
+		shares __testing, sensors, getLatestReports, allTemperatures
 	}
 	global {
 		__testing = {
 			"queries": [ { "name": "__testing" },
-					{ "name": "sensors" },
+					{ "name": "getLatestReports" },
 					{ "name": "allTemperatures" } ],
 			"events": [ { "domain": "sensor", "type": "new_sensor", "attrs": [ "sensor_id" ] },
+						{ "domain": "sensor", "type": "signal_report", "attrs": [ ] },
 					{ "domain": "sensor", "type": "unneeded_sensor", "attrs": [ "sensor_id" ] },
 					{ "domain": "sensor", "type": "add_sensor", "attrs": [ "name", "otherHost", "eci" ] } ]
 		}
@@ -18,6 +19,10 @@ ruleset manage_sensors {
 
 		sensors = function() {
 			ent:sensors.defaultsTo({});
+		}
+
+		getLatestReports = function() {
+			ent:reports.defaultsTo({});
 		}
 
 		allTemperatures = function() {
@@ -93,6 +98,43 @@ ruleset manage_sensors {
 								   "wellKnown_Tx": meta:eci } } )
 		}
 	}
+
+
+
+	rule signal_report {
+		select when sensor signal_report
+		pre {
+			reportId = random:uuid()
+			getLatestReports(){reportId} = {
+				"sent": 0,
+				"returned": 0,
+				"temperatures": []
+			}
+		}
+		fired {
+			Subscriptions:established("Tx_role","sensor").map(function(sub){
+				event:send({
+					"eci": sub{"Tx"},
+					"domain": "sensor",
+					"type": "report",
+					"attrs": {
+						"reportId": reportId,
+						"eci": meta:eci
+					}
+				});
+			});
+		}
+	}
+
+	rule catch_report {
+		select when return report
+		pre {
+			reportId = event:attr("reportId")
+		}
+	}
+
+
+
 
 	rule add_sensor {
 		select when sensor add_sensor

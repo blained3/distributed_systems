@@ -42,22 +42,22 @@ ruleset wovyn_base {
 		}
   }
 
-  rule threshold_notification {
-	  select when wovyn threshold_violation
-	foreach Subscriptions:established("Tx_role","manager") setting (sub)
-		  pre {
-			nothing = event:attrs().klog("Sent a message: ")
-			toPhoneNumber = sensor_profile:getProfile(){"toPhoneNumber"}
-		  }
-		event:send({
-			"eci": sub{"Tx"},
-			"domain": "test",
-			"type": "new_message",
-			"attrs": {
-				"to": toPhoneNumber,
-				"from": fromPhoneNumber,
-				"message": "The temperature was " + event:attr("temperature") + " at " + event:attr("timestamp") + "!!"
+	rule threshold_notification {
+		select when wovyn threshold_violation
+		foreach Subscriptions:established("Tx_role","manager") setting (sub)
+			pre {
+				nothing = event:attrs().klog("Sent a message: ")
+				toPhoneNumber = sensor_profile:getProfile(){"toPhoneNumber"}
 			}
-		});
-  }
+			event:send({
+				"eci": sub{"Tx"},
+				"domain": "test",
+				"type": "new_message",
+				"attrs": {
+					"to": toPhoneNumber,
+					"from": fromPhoneNumber,
+					"message": "The temperature was " + event:attr("temperature") + " at " + event:attr("timestamp") + "!!"
+				}
+			});
+	}
 }
