@@ -22,7 +22,12 @@ ruleset manage_sensors {
 		}
 
 		getLatestReports = function() {
-			ent:reports.defaultsTo({});
+			reports = ent:reports.defaultsTo({});
+			keys = reports.keys();
+			i = keys.length() - 6;
+			reports.filter(function(v,k){
+				keys.index(k) > i
+			});
 		}
 
 		allTemperatures = function() {
@@ -103,30 +108,51 @@ ruleset manage_sensors {
 
 	rule signal_report {
 		select when sensor signal_report
-		foreach Subscriptions:established("Tx_role","sensor") setting (sub)
 		pre {
-			reportId = random:uuid().klog()
-			ent:reports{reportId} = {
+			reportId = random:uuid()
+		}
+		fired {
+			ent:reports := ent:reports.defaultsTo({});
+			ent:reports{[reportId]} := {
 				"sent": 0,
 				"returned": 0,
 				"temperatures": []
+			};
+			raise sensor event "report_needed" attributes { "reportId": reportId }
+		}
+	}
+
+		rule signal_report_2 {
+			select when sensor report_needed
+			foreach Subscriptions:established("Tx_role","sensor") setting (sub)
+			pre {
+				reportId = event:attr("reportId")
+				newSent = ent:reports{[reportId, "sent"]}.as("Number") + 1
+			}
+			event:send({
+				"eci": sub{"Tx"},
+				"domain": "sensor",
+				"type": "report",
+				"attrs": {
+					"reportId": reportId,
+					"eci": meta:eci
+				}
+			});
+			fired {
+				ent:reports{[reportId, "sent"]} := newSent;
 			}
 		}
-		event:send({
-			"eci": sub{"Tx"},
-			"domain": "sensor",
-			"type": "report",
-			"attrs": {
-				"reportId": reportId,
-				"eci": meta:eci
-			}
-		});
-	}
 
 	rule catch_report {
 		select when return report
 		pre {
-			reportId = event:attr("reportId")
+			reportId = event:attr("reportId").klog("WAATT")
+			newReturned = ent:reports{[reportId, "returned"]}.as("Number") + 1
+			newTemps = ent:reports{[reportId, "temperatures"]}.append(event:attr("temperatures"))
+		}
+		fired {
+			ent:reports{[reportId, "returned"]} := newReturned;
+			ent:reports{[reportId, "temperatures"]} := newTemps;
 		}
 	}
 
